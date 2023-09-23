@@ -27,13 +27,13 @@ input ENUM_LOG_LEVEL Log_Level = V_INFO;  // Log level.
 input bool Info_On_Chart = true;          // Display info on chart.
 
 // Includes strategy.
-#include "Stg_MA.mqh"
+#include "Stg_MA_Breakout.mqh"
 
 // Defines.
-#define ea_name "Strategy MA"
+#define ea_name "Strategy MA Breakout"
 #define ea_version "2.000"
-#define ea_desc "Strategy based on the moving average price indicators."
-#define ea_link "https://github.com/EA31337/Strategy-MA"
+#define ea_desc "Strategy based on the moving average price indicators implementing breakout signal."
+#define ea_link "https://github.com/EA31337/Strategy-MA_Breakout"
 #define ea_author "EA31337 Ltd"
 
 // Properties.
@@ -59,7 +59,7 @@ int OnInit() {
   bool _result = true;
   EAParams ea_params(__FILE__, Log_Level);
   ea = new EA(ea_params);
-  _result &= ea.StrategyAdd<Stg_MA>(Active_Tfs);
+  _result &= ea.StrategyAdd<Stg_MA_Breakout>(Active_Tfs);
   return (_result ? INIT_SUCCEEDED : INIT_FAILED);
 }
 
