@@ -18,17 +18,17 @@ enum ENUM_STG_MA_BREAKOUT_TYPE {
 
 // User params.
 INPUT_GROUP("MA Breakout strategy: main strategy params");
-INPUT ENUM_STG_MA_BREAKOUT_TYPE MA_Breakout_Type = STG_MA_BREAKOUT_TYPE_MA;  // Indicator MA type
+INPUT ENUM_STG_MA_BREAKOUT_TYPE MA_Breakout_Type = STG_MA_BREAKOUT_TYPE_ICHIMOKU;  // Indicator MA type
 INPUT_GROUP("MA Breakout strategy: strategy params");
 INPUT float MA_Breakout_LotSize = 0;                // Lot size
-INPUT int MA_Breakout_SignalOpenMethod = 1;         // Signal open method (-127-127)
-INPUT float MA_Breakout_SignalOpenLevel = 0.2f;     // Signal open level
+INPUT int MA_Breakout_SignalOpenMethod = 0;         // Signal open method (-127-127)
+INPUT float MA_Breakout_SignalOpenLevel = 1.0f;     // Signal open level
 INPUT int MA_Breakout_SignalOpenFilterMethod = 32;  // Signal open filter method
 INPUT int MA_Breakout_SignalOpenFilterTime = 3;     // Signal open filter time
 INPUT int MA_Breakout_SignalOpenBoostMethod = 0;    // Signal open boost method
-INPUT int MA_Breakout_SignalCloseMethod = 1;        // Signal close method (-127-127)
+INPUT int MA_Breakout_SignalCloseMethod = 0;        // Signal close method (-127-127)
 INPUT int MA_Breakout_SignalCloseFilter = 0;        // Signal close filter (-127-127)
-INPUT float MA_Breakout_SignalCloseLevel = 0.0f;    // Signal close level
+INPUT float MA_Breakout_SignalCloseLevel = 1.0f;    // Signal close level
 INPUT int MA_Breakout_PriceStopMethod = 1;          // Price stop method (0-127)
 INPUT float MA_Breakout_PriceStopLevel = 2;         // Price stop level
 INPUT int MA_Breakout_TickFilterMethod = 32;        // Tick filter method
@@ -98,9 +98,10 @@ INPUT ENUM_IDATA_SOURCE_TYPE MA_Breakout_Indi_VIDYA_SourceType = IDATA_BUILTIN; 
 // Defines struct with default user strategy values.
 struct Stg_MA_Breakout_Params_Defaults : StgParams {
   Stg_MA_Breakout_Params_Defaults()
-      : StgParams(::MA_Breakout_SignalOpenMethod, ::MA_Breakout_SignalOpenFilterMethod, ::MA_Breakout_SignalOpenLevel, ::MA_Breakout_SignalOpenBoostMethod,
-                  ::MA_Breakout_SignalCloseMethod, ::MA_Breakout_SignalCloseFilter, ::MA_Breakout_SignalCloseLevel, ::MA_Breakout_PriceStopMethod,
-                  ::MA_Breakout_PriceStopLevel, ::MA_Breakout_TickFilterMethod, ::MA_Breakout_MaxSpread, ::MA_Breakout_Shift) {
+      : StgParams(::MA_Breakout_SignalOpenMethod, ::MA_Breakout_SignalOpenFilterMethod, ::MA_Breakout_SignalOpenLevel,
+                  ::MA_Breakout_SignalOpenBoostMethod, ::MA_Breakout_SignalCloseMethod, ::MA_Breakout_SignalCloseFilter,
+                  ::MA_Breakout_SignalCloseLevel, ::MA_Breakout_PriceStopMethod, ::MA_Breakout_PriceStopLevel,
+                  ::MA_Breakout_TickFilterMethod, ::MA_Breakout_MaxSpread, ::MA_Breakout_Shift) {
     Set(STRAT_PARAM_LS, MA_Breakout_LotSize);
     Set(STRAT_PARAM_OCL, MA_Breakout_OrderCloseLoss);
     Set(STRAT_PARAM_OCP, MA_Breakout_OrderCloseProfit);
@@ -134,8 +135,8 @@ class Stg_MA_Breakout : public Strategy {
       case STG_MA_BREAKOUT_TYPE_AMA:  // AMA
       {
         IndiAMAParams _indi_params(::MA_Breakout_Indi_AMA_InpPeriodAMA, ::MA_Breakout_Indi_AMA_InpFastPeriodEMA,
-                                   ::MA_Breakout_Indi_AMA_InpSlowPeriodEMA, ::MA_Breakout_Indi_AMA_InpShiftAMA, PRICE_TYPICAL,
-                                   ::MA_Breakout_Indi_AMA_Shift);
+                                   ::MA_Breakout_Indi_AMA_InpSlowPeriodEMA, ::MA_Breakout_Indi_AMA_InpShiftAMA,
+                                   PRICE_TYPICAL, ::MA_Breakout_Indi_AMA_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_AMA_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_AMA(_indi_params), ::MA_Breakout_Type);
@@ -143,8 +144,8 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_DEMA:  // DEMA
       {
-        IndiDEIndiMAParams _indi_params(::MA_Breakout_Indi_DEMA_Period, ::MA_Breakout_Indi_DEMA_MA_Shift, ::MA_Breakout_Indi_DEMA_Applied_Price,
-                                        ::MA_Breakout_Indi_DEMA_Shift);
+        IndiDEIndiMAParams _indi_params(::MA_Breakout_Indi_DEMA_Period, ::MA_Breakout_Indi_DEMA_MA_Shift,
+                                        ::MA_Breakout_Indi_DEMA_Applied_Price, ::MA_Breakout_Indi_DEMA_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_DEMA_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_DEMA(_indi_params), ::MA_Breakout_Type);
@@ -161,8 +162,9 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_ICHIMOKU:  // Ichimoku
       {
-        IndiIchimokuParams _indi_params(::MA_Breakout_Indi_Ichimoku_Period_Tenkan_Sen, ::MA_Breakout_Indi_Ichimoku_Period_Kijun_Sen,
-                                        ::MA_Breakout_Indi_Ichimoku_Period_Senkou_Span_B, ::MA_Breakout_Indi_Ichimoku_Shift);
+        IndiIchimokuParams _indi_params(
+            ::MA_Breakout_Indi_Ichimoku_Period_Tenkan_Sen, ::MA_Breakout_Indi_Ichimoku_Period_Kijun_Sen,
+            ::MA_Breakout_Indi_Ichimoku_Period_Senkou_Span_B, ::MA_Breakout_Indi_Ichimoku_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_Ichimoku_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_Ichimoku(_indi_params), ::MA_Breakout_Type);
@@ -170,8 +172,9 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_MA:  // MA
       {
-        IndiMAParams _indi_params(::MA_Breakout_Indi_MA_Period, ::MA_Breakout_Indi_MA_MA_Shift, ::MA_Breakout_Indi_MA_Method,
-                                  ::MA_Breakout_Indi_MA_Applied_Price, ::MA_Breakout_Indi_MA_Shift);
+        IndiMAParams _indi_params(::MA_Breakout_Indi_MA_Period, ::MA_Breakout_Indi_MA_MA_Shift,
+                                  ::MA_Breakout_Indi_MA_Method, ::MA_Breakout_Indi_MA_Applied_Price,
+                                  ::MA_Breakout_Indi_MA_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_MA_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_MA(_indi_params), ::MA_Breakout_Type);
@@ -179,7 +182,8 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_PRICE_CHANNEL:  // Price Channel
       {
-        IndiPriceChannelParams _indi_params(::MA_Breakout_Indi_PriceChannel_Period, ::MA_Breakout_Indi_PriceChannel_Shift);
+        IndiPriceChannelParams _indi_params(::MA_Breakout_Indi_PriceChannel_Period,
+                                            ::MA_Breakout_Indi_PriceChannel_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_PriceChannel_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_PriceChannel(_indi_params), ::MA_Breakout_Type);
@@ -187,7 +191,8 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_SAR:  // SAR
       {
-        IndiSARParams _indi_params(::MA_Breakout_Indi_SAR_Step, ::MA_Breakout_Indi_SAR_Maximum_Stop, ::MA_Breakout_Indi_SAR_Shift);
+        IndiSARParams _indi_params(::MA_Breakout_Indi_SAR_Step, ::MA_Breakout_Indi_SAR_Maximum_Stop,
+                                   ::MA_Breakout_Indi_SAR_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_SAR_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_SAR(_indi_params), ::MA_Breakout_Type);
@@ -195,8 +200,8 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_TEMA:  // TEMA
       {
-        IndiTEMAParams _indi_params(::MA_Breakout_Indi_TEMA_Period, ::MA_Breakout_Indi_TEMA_MA_Shift, ::MA_Breakout_Indi_TEMA_Applied_Price,
-                                    ::MA_Breakout_Indi_TEMA_Shift);
+        IndiTEMAParams _indi_params(::MA_Breakout_Indi_TEMA_Period, ::MA_Breakout_Indi_TEMA_MA_Shift,
+                                    ::MA_Breakout_Indi_TEMA_Applied_Price, ::MA_Breakout_Indi_TEMA_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_TEMA_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_TEMA(_indi_params), ::MA_Breakout_Type);
@@ -204,8 +209,9 @@ class Stg_MA_Breakout : public Strategy {
       }
       case STG_MA_BREAKOUT_TYPE_VIDYA:  // VIDYA
       {
-        IndiVIDYAParams _indi_params(::MA_Breakout_Indi_VIDYA_Period, ::MA_Breakout_Indi_VIDYA_MA_Period, ::MA_Breakout_Indi_VIDYA_MA_Shift,
-                                     ::MA_Breakout_Indi_VIDYA_Applied_Price, ::MA_Breakout_Indi_VIDYA_Shift);
+        IndiVIDYAParams _indi_params(::MA_Breakout_Indi_VIDYA_Period, ::MA_Breakout_Indi_VIDYA_MA_Period,
+                                     ::MA_Breakout_Indi_VIDYA_MA_Shift, ::MA_Breakout_Indi_VIDYA_Applied_Price,
+                                     ::MA_Breakout_Indi_VIDYA_Shift);
         _indi_params.SetDataSourceType(::MA_Breakout_Indi_VIDYA_SourceType);
         _indi_params.SetTf(Get<ENUM_TIMEFRAMES>(STRAT_PARAM_TF));
         SetIndicator(new Indi_VIDYA(_indi_params), ::MA_Breakout_Type);
@@ -231,14 +237,24 @@ class Stg_MA_Breakout : public Strategy {
       return false;
     }
     float _level_pips = (float)(_level * _chart.GetPipSize());
+    double _value1 = _indi[_ishift][0];
+    ChartEntry _ohlc_candle0 = _chart.GetEntry(0);
+    ChartEntry _ohlc_candle1 = _chart.GetEntry(1);
+    ChartEntry _ohlc_d1_0 = _chart.GetEntry(PERIOD_D1, _shift, _chart.GetSymbol());
+    ChartEntry _ohlc_d1_1 = _chart.GetEntry(PERIOD_D1, _shift + 1, _chart.GetSymbol());
+    double _range_candle = _ohlc_candle0.bar.ohlc.GetRange() + _ohlc_candle1.bar.ohlc.GetRange();
+    double _range_d1 = _ohlc_d1_0.bar.ohlc.GetRange() + _ohlc_d1_1.bar.ohlc.GetRange();
+    // double _tf_in_h =  ChartTf::TfToHours(_chart.Get<ENUM_TIMEFRAMES>(CHART_PARAM_TF)); // @fixme: It returns 0.0?
+    double _range_pc =
+        (100 / _range_d1) * _range_candle / ChartTf::TfToMinutes(_chart.Get<ENUM_TIMEFRAMES>(CHART_PARAM_TF));
+    _result &= _range_pc > _level;
+    _result &= (_chart.GetLow(_ishift) < _indi[_shift][0] && _chart.GetHigh(_ishift) > _indi[_shift][0]) ||
+               (_chart.GetLow(_ishift + 1) < _indi[_shift][0] && _chart.GetHigh(_ishift + 1) > _indi[_shift][0]);
     switch (_cmd) {
       case ORDER_TYPE_BUY:
-        _result &= _indi[_shift][0] >= _chart.GetOpen(_ishift) + _level_pips;
-        _result &=
-            _indi[_shift + 1][0] < _chart.GetOpen(_ishift + 1) || _indi[_shift + 2][0] < _chart.GetOpen(_ishift + 2);
-        _result &= _indi.IsIncreasing(1, 0, _shift);
+        _result &= _ohlc_candle0.bar.ohlc.IsBull() || _ohlc_candle1.bar.ohlc.IsBull();
         if (_result && _method != 0) {
-          if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(1, 0, _shift + 1);
+          if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(1, 0, _shift);
           if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(4, 0, _shift + 3);
           if (METHOD(_method, 2))
             _result &= fmax4(_indi[_shift][0], _indi[_shift + 1][0], _indi[_shift + 2][0], _indi[_shift + 3][0]) ==
@@ -246,12 +262,9 @@ class Stg_MA_Breakout : public Strategy {
         }
         break;
       case ORDER_TYPE_SELL:
-        _result &= _indi[_shift][0] <= _chart.GetOpen(_ishift) - _level_pips;
-        _result &=
-            _indi[_shift + 1][0] > _chart.GetOpen(_ishift + 1) || _indi[_shift + 2][0] > _chart.GetOpen(_ishift + 2);
-        _result &= _indi.IsDecreasing(1, 0, _shift);
+        _result &= _ohlc_candle0.bar.ohlc.IsBear() || _ohlc_candle1.bar.ohlc.IsBear();
         if (_result && _method != 0) {
-          if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(1, 0, _shift + 1);
+          if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(1, 0, _shift);
           if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(4, 0, _shift + 3);
           if (METHOD(_method, 2))
             _result &= fmin4(_indi[_shift][0], _indi[_shift + 1][0], _indi[_shift + 2][0], _indi[_shift + 3][0]) ==
