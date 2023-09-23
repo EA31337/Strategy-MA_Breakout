@@ -1,6 +1,6 @@
 /**
  * @file
- * Implements MA strategy.
+ * Implements MA Breakout strategy.
  */
 
 // Includes conditional compilation directives.

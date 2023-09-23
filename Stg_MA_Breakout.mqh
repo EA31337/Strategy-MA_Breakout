@@ -102,11 +102,11 @@ struct Stg_MA_Breakout_Params_Defaults : StgParams {
                   ::MA_Breakout_SignalOpenBoostMethod, ::MA_Breakout_SignalCloseMethod, ::MA_Breakout_SignalCloseFilter,
                   ::MA_Breakout_SignalCloseLevel, ::MA_Breakout_PriceStopMethod, ::MA_Breakout_PriceStopLevel,
                   ::MA_Breakout_TickFilterMethod, ::MA_Breakout_MaxSpread, ::MA_Breakout_Shift) {
-    Set(STRAT_PARAM_LS, MA_Breakout_LotSize);
-    Set(STRAT_PARAM_OCL, MA_Breakout_OrderCloseLoss);
-    Set(STRAT_PARAM_OCP, MA_Breakout_OrderCloseProfit);
-    Set(STRAT_PARAM_OCT, MA_Breakout_OrderCloseTime);
-    Set(STRAT_PARAM_SOFT, MA_Breakout_SignalOpenFilterTime);
+    Set(STRAT_PARAM_LS, ::MA_Breakout_LotSize);
+    Set(STRAT_PARAM_OCL, ::MA_Breakout_OrderCloseLoss);
+    Set(STRAT_PARAM_OCP, ::MA_Breakout_OrderCloseProfit);
+    Set(STRAT_PARAM_OCT, ::MA_Breakout_OrderCloseTime);
+    Set(STRAT_PARAM_SOFT, ::MA_Breakout_SignalOpenFilterTime);
   }
 };
 
@@ -117,12 +117,12 @@ class Stg_MA_Breakout : public Strategy {
 
   static Stg_MA_Breakout *Init(ENUM_TIMEFRAMES _tf = NULL, EA *_ea = NULL) {
     // Initialize strategy initial values.
-    Stg_MA_Breakout_Params_Defaults stg_ma_defaults;
-    StgParams _stg_params(stg_ma_defaults);
+    Stg_MA_Breakout_Params_Defaults stg_ma_breakout_defaults;
+    StgParams _stg_params(stg_ma_breakout_defaults);
     // Initialize Strategy instance.
     ChartParams _cparams(_tf, _Symbol);
     TradeParams _tparams;
-    Strategy *_strat = new Stg_MA_Breakout(_stg_params, _tparams, _cparams, "MA");
+    Strategy *_strat = new Stg_MA_Breakout(_stg_params, _tparams, _cparams, "MA Breakout");
     return _strat;
   }
 
